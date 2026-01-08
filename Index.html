@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PAYEER TECH — Earn & Withdraw</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <style>
+  :root {
+    --green: #16a34a;
+    --black: #111;
+    --white: #fff;
+    --gray: #e5e7eb;
+    --shadow: 0 10px 25px rgba(0,0,0,.25);
+  }
+  
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--gray);
+    color: var(--black);
+  }
+  
+  header {
+    background: var(--black);
+    color: var(--white);
+    padding: 18px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  
+  /* Pages */
+  .page { display: none; padding: 16px; padding-bottom: 90px; }
+  .page.active { display: block; }
+  
+  .card {
+    background: var(--white);
+    padding: 18px;
+    border-radius: 18px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+  }
+  
+  .balance-card {
+    background: linear-gradient(135deg, #16a34a, #22c55e);
+    color: #fff;
+    text-align: center;
+  }
+  
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 14px;
+  }
+  
+  .stat {
+    background: var(--white);
+    border-radius: 12px;
+    text-align: center;
+    padding: 14px;
+    box-shadow: var(--shadow);
+  }
+  
+  button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 14px;
+    background: var(--green);
+    color: var(--white);
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+  }
+  
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--black);
+    display: flex;
+    border-top: 1px solid #333;
+  }
+  
+  .bottom-nav div {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 12px;
+    color: #aaa;
+  }
+  
+  .bottom-nav div.active {
+    color: var(--green);
+    font-weight: bold;
+  }
+  
+  .icon { font-size: 22px; display:block; margin-bottom:4px; }
+  
+  </style>
+</head>
+<body>
+
+<header>PAYEER TECH EARNING APP</header>
+
+<!-- DASHBOARD -->
+<div class="page active" id="dashboard">
+  <div class="card balance-card">
+    <h2>Your Balance</h2>
+    <h1>₦<span id="balance">0</span></h1>
+  </div>
+  <div class="stat-grid">
+    <div class="stat">
+      <h3>Tasks Done</h3>
+      <h2 id="statTasks">0</h2>
+    </div>
+    <div class="stat">
+      <h3>Referrals</h3>
+      <h2 id="statRefs">0</h2>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Announcements</h3>
+    <p id="announcement">Welcome to PAYEER TECH! Earn money by completing tasks and referring friends.</p>
+  </div>
+</div>
+
+<!-- TASKS -->
+<div class="page" id="tasks">
+  <div class="card">
+    <h2>Tasks</h2>
+    <div id="taskList">Loading tasks...</div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="page" id="chat">
+  <div class="card">
+    <h2>Community Chat</h2>
+    <p>Chat here about tasks, payments, and tips.</p>
+    <textarea id="chatBox" rows="5" readonly style="background:#f9f9f9;"></textarea>
+    <input id="chatMsg" placeholder="Type a message">
+    <button onclick="sendChat()">Send</button>
+  </div>
+</div>
+
+<!-- REFERRAL -->
+<div class="page" id="referral">
+  <div class="card">
+    <h2>Referral Program</h2>
+    <p>Share your referral link and earn ₦1000 for each friend.</p>
+    <input id="refLink" readonly value="https://payeertech.com/?ref=USERID">
+    <button onclick="copyReferral()">Copy Link</button>
+  </div>
+</div>
+
+<!-- WITHDRAW -->
+<div class="page" id="withdraw">
+  <div class="card">
+    <h2>Withdrawal</h2>
+    <p>Minimum ₦5,000. You must subscribe before withdrawal.</p>
+    <input id="bankName" placeholder="Bank Name">
+    <input id="acctNum" placeholder="Account Number">
+    <input id="amount" placeholder="Amount">
+    <button onclick="requestWithdrawal()">Request Withdraw</button>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="profile">
+  <div class="card">
+    <h2>Profile</h2>
+    <p><strong>User ID:</strong> <span id="userId">12345</span></p>
+    <p><strong>Email:</strong> <span id="userEmail">user@mail.com</span></p>
+    <p><strong>Total Earned:</strong> ₦<span id="totalEarned">0</span></p>
+  </div>
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+<div class="bottom-nav">
+  <div class="active" onclick="openPage('dashboard', this)">
+    <span class="icon">📊</span>Dashboard
+  </div>
+  <div onclick="openPage('tasks', this)">
+    <span class="icon">📝</span>Tasks
+  </div>
+  <div onclick="openPage('chat', this)">
+    <span class="icon">💬</span>Chat
+  </div>
+  <div onclick="openPage('referral', this)">
+    <span class="icon">👥</span>Refer
+  </div>
+  <div onclick="openPage('withdraw', this)">
+    <span class="icon">💸</span>Withdraw
+  </div>
+  <div onclick="openPage('profile', this)">
+    <span class="icon">👤</span>Profile
+  </div>
+</div>
+
+<script>
+// UPDATE THIS with your backend endpoint:
+const API_URL = "https://payeer-tech-production.up.railway.app/api";
+
+// Page navigation
+function openPage(id, elem) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.bottom-nav div').forEach(n => n.classList.remove('active'));
+  elem.classList.add('active');
+}
+
+// Copy referral
+function copyReferral() {
+  const el = document.getElementById("refLink");
+  el.select();
+  document.execCommand("copy");
+  alert("Referral link copied!");
+}
+
+// Chat (dummy)
+function sendChat() {
+  const msg = document.getElementById("chatMsg").value;
+  document.getElementById("chatBox").value += "\\nYou: " + msg;
+  document.getElementById("chatMsg").value = "";
+  alert("Message sent (demo only)");
+}
+
+// Load dashboard stats from backend
+async function loadStats() {
+  try {
+    const res = await fetch(API + "/user/stats?userId=12345");
+    const data = await res.json();
+    document.getElementById("balance").innerText = data.balance;
+    document.getElementById("statTasks").innerText = data.tasks;
+    document.getElementById("statRefs").innerText = data.referrals;
+    document.getElementById("totalEarned").innerText = data.totalEarned;
+    document.getElementById("userEmail").innerText = data.email || "user@mail.com";
+    document.getElementById("userId").innerText = data.userId;
+    document.getElementById("announcement").innerText = data.announcement;
+  } catch (e) {
+    console.log("Error:", e);
+  }
+}
+
+// Load tasks
+async function loadTasks() {
+  try {
+    const res = await fetch(API + "/tasks");
+    const tasks = await res.json();
+    let html = "";
+    tasks.forEach(t => {
+      html += `<div class="card task">
+        <p><strong>${t.title}</strong> — ₦${t.amount}</p>
+        <button onclick="submitTask('${t._id}')">Submit Task</button>
+      </div>`;
+    });
+    document.getElementById("taskList").innerHTML = html;
+  } catch (e) { console.log(e); }
+}
+
+async function submitTask(id) {
+  alert("Task Submitted (backend hook)");
+}
+
+async function requestWithdrawal() {
+  alert("Withdrawal Requested (backend hook and subscription check)");
+}
+
+loadStats();
+loadTasks();
+</script>
+
+</body>
+</html> 

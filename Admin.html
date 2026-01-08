@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PAYEER TECH – Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root{
+  --green:#16a34a;
+  --dark:#0f172a;
+  --gray:#f1f5f9;
+  --white:#ffffff;
+  --shadow:0 8px 25px rgba(0,0,0,.15);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--gray);
+  color:#111;
+}
+
+/* HEADER */
+header{
+  background:var(--dark);
+  color:#fff;
+  padding:16px;
+  font-size:22px;
+  font-weight:bold;
+  text-align:center;
+}
+
+/* LAYOUT */
+.wrapper{
+  display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+  width:230px;
+  background:#020617;
+  min-height:100vh;
+  color:#fff;
+  padding:10px;
+}
+.sidebar h3{
+  text-align:center;
+  color:var(--green);
+}
+.sidebar button{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border:none;
+  background:#020617;
+  color:#cbd5f5;
+  text-align:left;
+  border-radius:8px;
+  cursor:pointer;
+}
+.sidebar button.active,
+.sidebar button:hover{
+  background:var(--green);
+  color:#fff;
+}
+
+/* CONTENT */
+.content{
+  flex:1;
+  padding:16px;
+}
+
+/* CARDS */
+.card{
+  background:var(--white);
+  padding:16px;
+  border-radius:16px;
+  margin-bottom:18px;
+  box-shadow:var(--shadow);
+}
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:14px;
+}
+.stat{
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+  color:#fff;
+  padding:18px;
+  border-radius:16px;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+
+/* TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
+  text-align:left;
+}
+th{
+  background:#f8fafc;
+}
+
+/* INPUTS */
+input,textarea,select{
+  width:100%;
+  padding:10px;
+  margin-top:6px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+/* BUTTONS */
+.btn{
+  padding:10px 16px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.btn.green{background:var(--green);color:#fff}
+.btn.red{background:#dc2626;color:#fff}
+.btn.gray{background:#64748b;color:#fff}
+
+/* PAGES */
+.page{display:none}
+.page.active{display:block}
+
+/* MOBILE */
+@media(max-width:768px){
+  .wrapper{flex-direction:column}
+  .sidebar{width:100%;display:flex;overflow-x:auto}
+  .sidebar button{flex:1;font-size:13px}
+}
+</style>
+</head>
+
+<body>
+
+<header>PAYEER TECH – ADMIN PANEL</header>
+
+<div class="wrapper">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h3>ADMIN</h3>
+  <button class="active" onclick="openPage('dashboard',this)">📊 Dashboard</button>
+  <button onclick="openPage('users',this)">👥 Users</button>
+  <button onclick="openPage('tasks',this)">📝 Tasks</button>
+  <button onclick="openPage('withdrawals',this)">💸 Withdrawals</button>
+  <button onclick="openPage('subscriptions',this)">💳 Subscriptions</button>
+  <button onclick="openPage('announcements',this)">📢 Announcements</button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="page active">
+  <div class="stat-grid">
+    <div class="stat">
+      <h3>Total Users</h3>
+      <h2 id="statUsers">0</h2>
+    </div>
+    <div class="stat">
+      <h3>Total Balance</h3>
+      <h2>₦<span id="statBalance">0</span></h2>
+    </div>
+    <div class="stat">
+      <h3>Pending Withdrawals</h3>
+      <h2 id="statWithdrawals">0</h2>
+    </div>
+    <div class="stat">
+      <h3>Pending Tasks</h3>
+      <h2 id="statTasks">0</h2>
+    </div>
+  </div>
+</div>
+
+<!-- USERS -->
+<div id="users" class="page">
+  <div class="card">
+    <h2>Users</h2>
+    <table>
+      <tr><th>User ID</th><th>Email</th><th>Balance</th></tr>
+      <tbody id="userTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TASKS -->
+<div id="tasks" class="page">
+  <div class="card">
+    <h2>Create Task</h2>
+    <input id="taskTitle" placeholder="Task Title">
+    <input value="1000" disabled>
+    <button class="btn green" onclick="createTask()">Create Task</button>
+  </div>
+
+  <div class="card">
+    <h2>Pending Task Submissions</h2>
+    <table>
+      <tr><th>User</th><th>Task</th><th>Action</th></tr>
+      <tbody id="taskApprovals"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- WITHDRAWALS -->
+<div id="withdrawals" class="page">
+  <div class="card">
+    <h2>Withdrawal Requests</h2>
+    <table>
+      <tr>
+        <th>User</th>
+        <th>Amount</th>
+        <th>Bank</th>
+        <th>Account</th>
+        <th>Action</th>
+      </tr>
+      <tbody id="withdrawTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SUBSCRIPTIONS -->
+<div id="subscriptions" class="page">
+  <div class="card">
+    <h2>Subscription Requests (₦2000)</h2>
+    <table>
+      <tr><th>User</th><th>Proof</th><th>Action</th></tr>
+      <tbody id="subTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ANNOUNCEMENTS -->
+<div id="announcements" class="page">
+  <div class="card">
+    <h2>Post Announcement / Podcast</h2>
+    <textarea id="announceText" rows="4" placeholder="Message for all users"></textarea>
+    <button class="btn green" onclick="postAnnouncement()">Post</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script>
+// 🔗 CONNECT TO RAILWAY BACKEND
+const API_URL = "https://payeer-tech-production.up.railway.app/api";
+
+// NAVIGATION
+function openPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// DUMMY FUNCTIONS (REPLACE WITH FETCH)
+function createTask(){
+  alert("Task created (connect backend)");
+}
+function postAnnouncement(){
+  alert("Announcement sent to users");
+}
+
+// ON LOAD (replace with backend fetch)
+document.getElementById("statUsers").innerText = 0;
+document.getElementById("statBalance").innerText = 0;
+document.getElementById("statWithdrawals").innerText = 0;
+document.getElementById("statTasks").innerText = 0;
+</script>
+
+</body>
+</html>
