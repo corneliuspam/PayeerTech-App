@@ -1,282 +1,183 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>PAYEER TECH – Admin Panel</title>
+<title>PAYEER TECH ADMIN</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 :root{
   --green:#16a34a;
-  --dark:#0f172a;
-  --gray:#f1f5f9;
-  --white:#ffffff;
-  --shadow:0 8px 25px rgba(0,0,0,.15);
+  --dark:#020617;
+  --light:#f8fafc;
 }
-*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Arial, sans-serif;
-  background:var(--gray);
-  color:#111;
+  font-family:Arial,sans-serif;
+  background:var(--light);
 }
-
-/* HEADER */
 header{
   background:var(--dark);
   color:#fff;
-  padding:16px;
-  font-size:22px;
+  padding:14px;
+  text-align:center;
+  font-size:20px;
   font-weight:bold;
-  text-align:center;
 }
-
-/* LAYOUT */
-.wrapper{
+.page{display:none;padding:16px;padding-bottom:80px}
+.page.active{display:block}
+.card{
+  background:#fff;
+  padding:16px;
+  border-radius:16px;
+  margin-bottom:14px;
+  box-shadow:0 6px 15px rgba(0,0,0,.15);
+}
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
   display:flex;
-}
-
-/* SIDEBAR */
-.sidebar{
-  width:230px;
   background:#020617;
-  min-height:100vh;
-  color:#fff;
-  padding:10px;
 }
-.sidebar h3{
+.bottom div{
+  flex:1;
   text-align:center;
-  color:var(--green);
+  padding:8px;
+  font-size:12px;
+  color:#aaa;
 }
-.sidebar button{
+.bottom div.active{color:#16a34a;font-weight:bold}
+.icon{font-size:22px;display:block}
+button{
   width:100%;
   padding:12px;
-  margin:6px 0;
   border:none;
-  background:#020617;
-  color:#cbd5f5;
-  text-align:left;
-  border-radius:8px;
-  cursor:pointer;
-}
-.sidebar button.active,
-.sidebar button:hover{
-  background:var(--green);
+  border-radius:12px;
+  background:#16a34a;
   color:#fff;
-}
-
-/* CONTENT */
-.content{
-  flex:1;
-  padding:16px;
-}
-
-/* CARDS */
-.card{
-  background:var(--white);
-  padding:16px;
-  border-radius:16px;
-  margin-bottom:18px;
-  box-shadow:var(--shadow);
-}
-.stat-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:14px;
-}
-.stat{
-  background:linear-gradient(135deg,#16a34a,#22c55e);
-  color:#fff;
-  padding:18px;
-  border-radius:16px;
-  text-align:center;
-  box-shadow:var(--shadow);
-}
-
-/* TABLE */
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th,td{
-  padding:10px;
-  border-bottom:1px solid #ddd;
-  text-align:left;
-}
-th{
-  background:#f8fafc;
-}
-
-/* INPUTS */
-input,textarea,select{
-  width:100%;
-  padding:10px;
-  margin-top:6px;
-  border-radius:10px;
-  border:1px solid #ccc;
-}
-
-/* BUTTONS */
-.btn{
-  padding:10px 16px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
   font-weight:bold;
 }
-.btn.green{background:var(--green);color:#fff}
-.btn.red{background:#dc2626;color:#fff}
-.btn.gray{background:#64748b;color:#fff}
-
-/* PAGES */
-.page{display:none}
-.page.active{display:block}
-
-/* MOBILE */
-@media(max-width:768px){
-  .wrapper{flex-direction:column}
-  .sidebar{width:100%;display:flex;overflow-x:auto}
-  .sidebar button{flex:1;font-size:13px}
+input,textarea{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  margin-top:6px;
+}
+.admin-badge{
+  background:#16a34a;
+  color:#fff;
+  padding:6px 12px;
+  border-radius:20px;
+  display:inline-block;
+  font-size:12px;
 }
 </style>
 </head>
 
 <body>
 
-<header>PAYEER TECH – ADMIN PANEL</header>
-
-<div class="wrapper">
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <h3>ADMIN</h3>
-  <button class="active" onclick="openPage('dashboard',this)">📊 Dashboard</button>
-  <button onclick="openPage('users',this)">👥 Users</button>
-  <button onclick="openPage('tasks',this)">📝 Tasks</button>
-  <button onclick="openPage('withdrawals',this)">💸 Withdrawals</button>
-  <button onclick="openPage('subscriptions',this)">💳 Subscriptions</button>
-  <button onclick="openPage('announcements',this)">📢 Announcements</button>
-</div>
-
-<!-- CONTENT -->
-<div class="content">
+<header>
+  PAYEER TECH ADMIN<br>
+  <span class="admin-badge">ADMIN PANEL</span>
+</header>
 
 <!-- DASHBOARD -->
 <div id="dashboard" class="page active">
-  <div class="stat-grid">
-    <div class="stat">
-      <h3>Total Users</h3>
-      <h2 id="statUsers">0</h2>
-    </div>
-    <div class="stat">
-      <h3>Total Balance</h3>
-      <h2>₦<span id="statBalance">0</span></h2>
-    </div>
-    <div class="stat">
-      <h3>Pending Withdrawals</h3>
-      <h2 id="statWithdrawals">0</h2>
-    </div>
-    <div class="stat">
-      <h3>Pending Tasks</h3>
-      <h2 id="statTasks">0</h2>
-    </div>
+  <div class="card">
+    <h3>Admin Info</h3>
+    <p><b>ID:</b> <span id="adminId"></span></p>
+    <p><b>Name:</b> <span id="adminName"></span></p>
+  </div>
+
+  <div class="card">
+    <h3>Statistics</h3>
+    <p>👥 Users: <b>0</b></p>
+    <p>💸 Pending Withdrawals: <b>0</b></p>
+    <p>📝 Pending Tasks: <b>0</b></p>
   </div>
 </div>
 
-<!-- USERS -->
-<div id="users" class="page">
+<!-- ANNOUNCEMENT -->
+<div id="announce" class="page">
   <div class="card">
-    <h2>Users</h2>
-    <table>
-      <tr><th>User ID</th><th>Email</th><th>Balance</th></tr>
-      <tbody id="userTable"></tbody>
-    </table>
+    <h3>Post Announcement</h3>
+    <textarea placeholder="Write announcement..."></textarea>
+    <button onclick="postAnnounce()">Post</button>
   </div>
 </div>
 
 <!-- TASKS -->
 <div id="tasks" class="page">
   <div class="card">
-    <h2>Create Task</h2>
-    <input id="taskTitle" placeholder="Task Title">
-    <input value="1000" disabled>
-    <button class="btn green" onclick="createTask()">Create Task</button>
+    <h3>Create Task</h3>
+    <input placeholder="Task title">
+    <textarea placeholder="Task instructions"></textarea>
+    <input placeholder="Reward (₦)">
+    <button onclick="postTask()">Post Task</button>
   </div>
+</div>
 
+<!-- APPROVALS -->
+<div id="approve" class="page">
   <div class="card">
-    <h2>Pending Task Submissions</h2>
-    <table>
-      <tr><th>User</th><th>Task</th><th>Action</th></tr>
-      <tbody id="taskApprovals"></tbody>
-    </table>
+    <h3>Approvals</h3>
+    <p>No pending requests</p>
+    <button disabled>Approve</button>
   </div>
 </div>
 
-<!-- WITHDRAWALS -->
-<div id="withdrawals" class="page">
+<!-- USERS -->
+<div id="users" class="page">
   <div class="card">
-    <h2>Withdrawal Requests</h2>
-    <table>
-      <tr>
-        <th>User</th>
-        <th>Amount</th>
-        <th>Bank</th>
-        <th>Account</th>
-        <th>Action</th>
-      </tr>
-      <tbody id="withdrawTable"></tbody>
-    </table>
+    <h3>Users</h3>
+    <p>List will load from backend</p>
   </div>
 </div>
 
-<!-- SUBSCRIPTIONS -->
-<div id="subscriptions" class="page">
-  <div class="card">
-    <h2>Subscription Requests (₦2000)</h2>
-    <table>
-      <tr><th>User</th><th>Proof</th><th>Action</th></tr>
-      <tbody id="subTable"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- ANNOUNCEMENTS -->
-<div id="announcements" class="page">
-  <div class="card">
-    <h2>Post Announcement / Podcast</h2>
-    <textarea id="announceText" rows="4" placeholder="Message for all users"></textarea>
-    <button class="btn green" onclick="postAnnouncement()">Post</button>
-  </div>
-</div>
-
-</div>
+<!-- NAV -->
+<div class="bottom">
+  <div class="active" onclick="openPage('dashboard',this)"><span class="icon">📊</span>Dashboard</div>
+  <div onclick="openPage('announce',this)"><span class="icon">📢</span>Post</div>
+  <div onclick="openPage('tasks',this)"><span class="icon">📝</span>Tasks</div>
+  <div onclick="openPage('approve',this)"><span class="icon">✅</span>Approve</div>
+  <div onclick="openPage('users',this)"><span class="icon">👥</span>Users</div>
 </div>
 
 <script>
-// 🔗 CONNECT TO RAILWAY BACKEND
-const API_URL = "https://payeer-tech-production.up.railway.app/api";
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-// NAVIGATION
-function openPage(id,btn){
+const admin = tg.initDataUnsafe.user;
+
+// ⚠️ ADMIN ID CHECK (VERY IMPORTANT)
+const ADMIN_IDS = [6139816385]; // <-- PUT YOUR TELEGRAM ID HERE
+
+if(!admin || !ADMIN_IDS.includes(admin.id)){
+  tg.showAlert("Access denied");
+  document.body.innerHTML = "";
+}
+
+document.getElementById("adminId").innerText = admin.id;
+document.getElementById("adminName").innerText = admin.first_name;
+
+function openPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+  document.querySelectorAll('.bottom div').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
 }
 
-// DUMMY FUNCTIONS (REPLACE WITH FETCH)
-function createTask(){
-  alert("Task created (connect backend)");
+function postAnnounce(){
+  tg.showAlert("Announcement sent");
 }
-function postAnnouncement(){
-  alert("Announcement sent to users");
+function postTask(){
+  tg.showAlert("Task posted");
 }
-
-// ON LOAD (replace with backend fetch)
-document.getElementById("statUsers").innerText = 0;
-document.getElementById("statBalance").innerText = 0;
-document.getElementById("statWithdrawals").innerText = 0;
-document.getElementById("statTasks").innerText = 0;
 </script>
 
 </body>
